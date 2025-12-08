@@ -1,0 +1,90 @@
+# virtual envirenment
+venv/
+env/
+.venv/
+
+# python cache
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+
+# pip packages
+*.egg-info/
+*.egg
+.pytest_cache
+.python_lib
+.python-version
+pip-log.txt
+pip-delete-this-directory.txt
+
+# VS Code
+.vscode/
+*.code-workspace
+
+# log files 
+*.log
+*.pot
+*.sqlite3
+
+# pyinstaller files
+dist/
+build/
+sdist/
+*.egg-info/
+*.tar.gz
+*.whl
+
+# Environment Variables
+.env
+.venv
+secrets.yml
+config.yml
+*.key
+*.cert
+*.pem
+
+# tests
+.coverage
+htmlcov/
+.pytest_cache/
+.tox/
+.coverage.*
+.cache
+
+# Windows
+Thumbs.db
+ehthumbs.db
+[Dd]esktop.ini
+$RECYCLE.BIN/
+
+# Jupyter Notebook 
+.ipynb_checkpoints
+
+# Database files
+*.db
+*.sqlite3
+
+# Excel file
+*.xlsx
+*.csv
+
+# tokenfile
+eitta.py
+
+# Selenium
+chromedriver
+chromedriver.exe
+geckodriver
+geckodriver.exe
+msedgedriver
+msedgedriver.exe
+
+# chrome profile
+chrome_profile/
+chrome_profile_*/
+
+
+# tester file 
+sample-data-for-test-check-data.txt
