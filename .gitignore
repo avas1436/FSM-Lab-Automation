@@ -23,7 +23,7 @@ pip-delete-this-directory.txt
 .vscode/
 *.code-workspace
 
-# log files 
+# log files
 *.log
 *.pot
 *.sqlite3
@@ -59,7 +59,7 @@ ehthumbs.db
 [Dd]esktop.ini
 $RECYCLE.BIN/
 
-# Jupyter Notebook 
+# Jupyter Notebook
 .ipynb_checkpoints
 
 # Database files
@@ -86,5 +86,5 @@ chrome_profile/
 chrome_profile_*/
 
 
-# tester file 
+# tester file
 sample-data-for-test-check-data.txt

@@ -1,0 +1,7 @@
+repos:
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v4.6.0
+    hooks:
+      - id: trailing-whitespace       # حذف فاصله‌های اضافی در انتهای خطوط
+      - id: end-of-file-fixer         # اطمینان از وجود یک خط خالی در انتهای فایل
+      - id: check-yaml                # بررسی صحت فایل‌های YAML
