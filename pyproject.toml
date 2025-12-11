@@ -11,5 +11,7 @@ dependencies = [
     "typer>=0.20.0",
 ]
 
+# قسمت مربوط به تعیین کد اجرای برنامه در ترمینال 
 [project.scripts]
-myproject = "project.core:main"
+# قسمت اول نام دستور اجرای برنامه و در ادامه آدرس فایل اصلی و بعد از : نام تابعی که با دستور برنامه اجرا خواهد شد 
+FSMApp = "project.core:main"
