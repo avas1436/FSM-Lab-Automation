@@ -38,6 +38,7 @@ version = "0.1.0"
 source = { virtual = "." }
 dependencies = [
     { name = "jdatetime" },
+    { name = "logging" },
     { name = "openpyxl" },
     { name = "rich" },
     { name = "typer" },
@@ -46,6 +47,7 @@ dependencies = [
 [package.metadata]
 requires-dist = [
     { name = "jdatetime", specifier = ">=5.2.0" },
+    { name = "logging", specifier = ">=0.4.9.6" },
     { name = "openpyxl", specifier = ">=3.1.5" },
     { name = "rich", specifier = ">=14.2.0" },
     { name = "typer", specifier = ">=0.20.0" },
@@ -71,6 +73,12 @@ sdist = { url = "https://files.pythonhosted.org/packages/6e/9d/5ed59c36f3cbc68c0
 wheels = [
     { url = "https://files.pythonhosted.org/packages/16/39/0dd2676d08468692606645db5ea40091290dc20747ff59636c21c0567d3c/jdatetime-5.2.0-py3-none-any.whl", hash = "sha256:d4aa73543e4e6c0e6122b58743773168edee5efe5c5acf05d1dc8c90524ca71c", size = 12199, upload-time = "2025-01-26T09:29:15.038Z" },
 ]
+
+[[package]]
+name = "logging"
+version = "0.4.9.6"
+source = { registry = "https://pypi.org/simple" }
+sdist = { url = "https://files.pythonhosted.org/packages/93/4b/979db9e44be09f71e85c9c8cfc42f258adfb7d93ce01deed2788b2948919/logging-0.4.9.6.tar.gz", hash = "sha256:26f6b50773f085042d301085bd1bf5d9f3735704db9f37c1ce6d8b85c38f2417", size = 96029, upload-time = "2013-06-04T23:43:22.086Z" }
 
 [[package]]
 name = "markdown-it-py"
