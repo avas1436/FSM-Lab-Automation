@@ -15,9 +15,5 @@ dependencies = [
 
 # قسمت مربوط به تعیین کد اجرای برنامه در ترمینال 
 [project.scripts]
-<<<<<<< HEAD
-myproject = "project.core:main"
-=======
 # قسمت اول نام دستور اجرای برنامه و در ادامه آدرس فایل اصلی و بعد از : نام تابعی که با دستور برنامه اجرا خواهد شد 
-FSMApp = "project.core:main"
->>>>>>> faf8fef325772f4ab7d3d5868182e3b306d4656e
+FSMApp = "ProjectSRC.core:main"
