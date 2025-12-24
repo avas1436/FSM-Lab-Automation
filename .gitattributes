@@ -1,0 +1,11 @@
+# Auto detect text files and perform LF normalization
+* text=auto
+
+# Python files should always use LF line endings
+*.py text eol=lf
+
+# Normalize as text, LF in repo
+*.md text eol=lf
+
+# Always keep our version during merge conflicts
+*.lock merge=ours

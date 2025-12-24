@@ -6,11 +6,18 @@ readme = "README.md"
 requires-python = ">=3.13"
 dependencies = [
     "jdatetime>=5.2.0",
+    "logging>=0.4.9.6",
     "openpyxl>=3.1.5",
     "pydantic>=2.12.5",
     "rich>=14.2.0",
     "typer>=0.20.0",
 ]
 
+# قسمت مربوط به تعیین کد اجرای برنامه در ترمینال 
 [project.scripts]
+<<<<<<< HEAD
 myproject = "project.core:main"
+=======
+# قسمت اول نام دستور اجرای برنامه و در ادامه آدرس فایل اصلی و بعد از : نام تابعی که با دستور برنامه اجرا خواهد شد 
+FSMApp = "project.core:main"
+>>>>>>> faf8fef325772f4ab7d3d5868182e3b306d4656e
