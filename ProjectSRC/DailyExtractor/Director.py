@@ -1,0 +1,2 @@
+class LabResultManager:
+    pass

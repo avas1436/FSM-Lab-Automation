@@ -1,0 +1,2 @@
+class LabResultBuilder:
+    pass
