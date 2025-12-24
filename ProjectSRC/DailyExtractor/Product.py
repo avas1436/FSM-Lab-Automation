@@ -14,13 +14,13 @@ class LabResult(BaseModel):
     time: str = Field(..., min_length=4, max_length=5)
     timestamp: int | None = None
     klin: int
-    above40: Decimal
-    carbondioxide: Decimal
-    par05: Decimal
-    par51: Decimal
-    par10: Decimal
-    par16: Decimal
-    par60: Decimal
+    above40: Decimal | None = None
+    carbondioxide: Decimal | None = None
+    par05: Decimal | None = None
+    par51: Decimal | None = None
+    par10: Decimal | None = None
+    par16: Decimal | None = None
+    par60: Decimal | None = None
 
     @field_validator("year", mode="before")
     def check_year(cls, v):
@@ -50,7 +50,9 @@ class LabResult(BaseModel):
         return v
 
     def model_post_init(self, __context):
-        """بعد از ساخت مدل، timestamp را محاسبه کن"""
+        """بعد از ساخت مدل، فیلدهای محاسباتی را مقداردهی کن"""
+
+        # timestamp از تاریخ شمسی ساخته می‌شود
         self.timestamp = int(
             jdatetime.datetime(
                 year=int(self.year),
@@ -62,6 +64,12 @@ class LabResult(BaseModel):
             .togregorian()
             .timestamp()
         )
+
+        # par10 = par05 + par51
+        self.par10 = self.par05 + self.par51  # type: ignore
+
+        # par16 = 100 - par10 - par60
+        self.par16 = Decimal("100.0") - self.par10 - self.par60  # type: ignore
 
 
 # Example :
@@ -76,8 +84,8 @@ class LabResult(BaseModel):
 #     carbondioxide=Decimal("3.2"),
 #     par05=Decimal("0.5"),
 #     par51=Decimal("1.1"),
-#     par10=Decimal("2.0"),
-#     par16=Decimal("1.6"),
+#     # par10=Decimal("2.0"), نیازی به وارد کردن این قسمت نیست
+#     # par16=Decimal("1.6"), نیازی به وارد کردن این قسمت نیست
 #     par60=Decimal("6.0"),
 # )
 # print(result)
@@ -85,17 +93,17 @@ class LabResult(BaseModel):
 
 # Result:
 
-# result = sampleID='8ec8ec4c-b1e4-4596-a04c-d0b0a1bd198d'
-#             year='1402'
-#             month='12'
-#             day='24'
-#             time='1330'
-#             timestamp=1710410400
-#             klin=1
-#             above40=Decimal('12.5')
-#             carbondioxide=Decimal('3.2')
-#             par05=Decimal('0.5')
-#             par51=Decimal('1.1')
-#             par10=Decimal('2.0')
-#             par16=Decimal('1.6')
-#             par60=Decimal('6.0')
+# result = sampleID='7c70773e-81c3-4f91-b3be-b2924892db0d'
+#    year='1402'
+#    month='12'
+#    day='24'
+#    time='1330'
+#    timestamp=1710410400
+#    klin=1
+#    above40=Decimal('12.5')
+#    carbondioxide=Decimal('3.2')
+#    par05=Decimal('0.5')
+#    par51=Decimal('1.1')
+#    par10=Decimal('1.6')
+#    par16=Decimal('92.4')
+#    par60=Decimal('6.0')
