@@ -64,6 +64,8 @@ class LabResult(BaseModel):
         )
 
 
+# Example :
+
 # result = LabResult(
 #     year="1402",
 #     month="12",
@@ -80,6 +82,8 @@ class LabResult(BaseModel):
 # )
 # print(result)
 
+
+# Result:
 
 # result = sampleID='8ec8ec4c-b1e4-4596-a04c-d0b0a1bd198d'
 #             year='1402'
