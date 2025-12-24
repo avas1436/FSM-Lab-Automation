@@ -12,15 +12,22 @@ class LabResult(BaseModel):
     month: str = Field(..., min_length=2, max_length=2)
     day: str = Field(..., min_length=2, max_length=2)
     time: str = Field(..., min_length=4, max_length=5)
-    timestamp: int | None = None
+    timestamp: int | str = "NA"
     klin: int
-    above40: Decimal | None = None
-    carbondioxide: Decimal | None = None
-    par05: Decimal | None = None
-    par51: Decimal | None = None
-    par10: Decimal | None = None
-    par16: Decimal | None = None
-    par60: Decimal | None = None
+    above40: Decimal | str = "Not Tested"
+    carbondioxide: Decimal | str = "Not Tested"
+    par05: Decimal | str = "Not Tested"
+    par51: Decimal | str = "Not Tested"
+    par10: Decimal | str = "Not Tested"
+    par16: Decimal | str = "Not Tested"
+    par60: Decimal | str = "Not Tested"
+
+    @field_validator("klin", mode="before")
+    def check_klin(cls, v):
+        allowed = {1, 2, 12}
+        if int(v) not in allowed:
+            raise ValueError("klin must be one of 1, 2, or 12")
+        return int(v)
 
     @field_validator("year", mode="before")
     def check_year(cls, v):
