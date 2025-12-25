@@ -1,3 +1,4 @@
+import datetime
 from abc import ABC
 from decimal import Decimal
 from typing import Any, Dict
@@ -96,9 +97,9 @@ class LabResultBuilder:
 
             if i < 8:
                 continue
-            val = str(ls[0])[:2]  # فقط دو رقم اول ساعت
-            if val.isdigit() and 0 <= int(val) <= 24:
-                time = str(ls[0])[:5].replace(":", "")
+
+            if isinstance(ls[0], (datetime.time, datetime.datetime)):
+                time = ls[0].strftime("%H%M")
             else:
                 continue
 
