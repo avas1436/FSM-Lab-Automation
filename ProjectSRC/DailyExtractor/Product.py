@@ -53,13 +53,27 @@ class LabResult(BaseModel):
         """بعد از ساخت مدل، فیلدهای محاسباتی را مقداردهی کن"""
 
         # timestamp از تاریخ شمسی ساخته می‌شود
+        hour = int(self.time[:2])
+        minute = int(self.time[2:])
+        year_int = int(self.year)
+        month_int = int(self.month)
+        day_int = int(self.day)  # اگر ساعت بین 00:00 تا 07:59 بود → یک روز جلو برو
+        base_date = jdatetime.date(year_int, month_int, day_int)
+        if 0 <= hour < 8:
+            base_date = base_date + jdatetime.timedelta(days=1)
+
+        # همگام‌سازی year/month/day با تاریخ جدید
+        self.year = f"{base_date.year:04d}"
+        self.month = f"{base_date.month:02d}"
+        self.day = f"{base_date.day:02d}"
+
         self.timestamp = int(
             jdatetime.datetime(
-                year=int(self.year),
-                month=int(self.month),
-                day=int(self.day),
-                hour=int(self.time[:2]),
-                minute=int(self.time[2:]),
+                year=base_date.year,
+                month=base_date.month,
+                day=base_date.day,
+                hour=hour,
+                minute=minute,
             )
             .togregorian()
             .timestamp()
@@ -70,14 +84,12 @@ class LabResult(BaseModel):
             self.par10 = self.par05 + self.par51
         else:
             self.par10 = "Not Tested"
-        # self.par10 = self.par05 + self.par51  # type: ignore
 
         # par16 = 100 - par10 - par60
         if isinstance(self.par10, Decimal) and isinstance(self.par60, Decimal):
             self.par16 = Decimal("100.0") - self.par10 - self.par60
         else:
             self.par16 = "Not Tested"
-        # self.par16 = Decimal("100.0") - self.par10 - self.par60  # type: ignore
 
 
 # Example :

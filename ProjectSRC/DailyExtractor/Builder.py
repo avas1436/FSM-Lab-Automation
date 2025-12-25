@@ -1,6 +1,6 @@
 import datetime
 from abc import ABC
-from decimal import Decimal
+from decimal import ROUND_HALF_UP, Decimal, InvalidOperation
 from typing import Any, Dict
 
 import pandas as pd  # type: ignore
@@ -84,6 +84,15 @@ class ExcelAdapterFacade:
         return self.adapter.get_records()
 
 
+def safe_decimal(value, sp: str = "0.1") -> Decimal | str:
+    if value is None:
+        return "Not Tested"
+    try:
+        return Decimal(str(value)).quantize(Decimal(sp), rounding=ROUND_HALF_UP)
+    except (InvalidOperation, ValueError):
+        return "Not Tested"
+
+
 class LabResultBuilder:
     def __init__(self, raw_data: list[list]):
         self.raw_data = raw_data
@@ -108,20 +117,22 @@ class LabResultBuilder:
                 "month": month,
                 "day": day,
                 "time": time,
-                "klin1": str(ls[1]) if ls[1] is not None else "Not Tested",
-                "klin2": str(ls[3]) if ls[3] is not None else "Not Tested",
-                "above40": str(ls[5]) if ls[5] is not None else "Not Tested",
+                "klin1": safe_decimal(str(ls[1]), sp="0.01") if ls[1] is not None else "Not Tested",
+                "klin2": safe_decimal(str(ls[3]), sp="0.01") if ls[3] is not None else "Not Tested",
+                "above40": (
+                    safe_decimal(str(ls[5]), sp="0.01") if ls[5] is not None else "Not Tested"
+                ),
                 "par05": (
-                    str(self.raw_data[i + 1][8])
+                    safe_decimal(str(self.raw_data[i + 1][8]))
                     if 7 < i < 20 and self.raw_data[i + 1][8] is not None
                     else "Not Tested"
                 ),
                 "par51": (
-                    str(self.raw_data[i + 1][9])
+                    safe_decimal(str(self.raw_data[i + 1][9]))
                     if 7 < i < 20 and self.raw_data[i + 1][9] is not None
                     else "Not Tested"
                 ),
-                "par60": str(ls[11]) if ls[11] is not None else "Not Tested",
+                "par60": safe_decimal(str(ls[11])) if ls[11] is not None else "Not Tested",
             }
 
             fields = ["klin1", "klin2", "above40", "par05"]
@@ -138,15 +149,15 @@ class LabResultBuilder:
 
 # openpyxl adaptor test:
 
-excel = Openpyxl(
-    file_path=r"C:\Users\abAsz\Documents\GIT\FSM Lab Automation\ProjectSRC\DailyExtractor\daily.xlsx",
-    start=1,
-    end=4,
-)
+# excel = Openpyxl(
+#     file_path=r"C:\Users\abAsz\Documents\GIT\FSM Lab Automation\ProjectSRC\DailyExtractor\daily.xlsx",
+#     start=1,
+#     end=4,
+# )
 
-data = excel.get_records()
+# data = excel.get_records()
 
-for i in range(4):
-    data_parser = LabResultBuilder(next(data))
-    lab_result = data_parser.parse().build()
-    print(lab_result)
+# for i in range(4):
+#     data_parser = LabResultBuilder(next(data))
+#     lab_result = data_parser.parse().build()
+#     print(lab_result)
