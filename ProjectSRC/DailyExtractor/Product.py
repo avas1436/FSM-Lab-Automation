@@ -13,21 +13,14 @@ class LabResult(BaseModel):
     day: str = Field(..., min_length=2, max_length=2)
     time: str = Field(..., min_length=4, max_length=5)
     timestamp: int | str = "NA"
-    klin: int
+    klin1: Decimal | str = "Not Tested"
+    klin2: Decimal | str = "Not Tested"
     above40: Decimal | str = "Not Tested"
-    carbondioxide: Decimal | str = "Not Tested"
     par05: Decimal | str = "Not Tested"
     par51: Decimal | str = "Not Tested"
     par10: Decimal | str = "Not Tested"
     par16: Decimal | str = "Not Tested"
     par60: Decimal | str = "Not Tested"
-
-    @field_validator("klin", mode="before")
-    def check_klin(cls, v):
-        allowed = {1, 2, 12}
-        if int(v) not in allowed:
-            raise ValueError("klin must be one of 1, 2, or 12")
-        return int(v)
 
     @field_validator("year", mode="before")
     def check_year(cls, v):
@@ -86,9 +79,9 @@ class LabResult(BaseModel):
 #     month="12",
 #     day="24",
 #     time="1330",
-#     klin=1,
+#     klin1="1.32",
+#     klin2="3.42",
 #     above40=Decimal("12.5"),
-#     carbondioxide=Decimal("3.2"),
 #     par05=Decimal("0.5"),
 #     par51=Decimal("1.1"),
 #     # par10=Decimal("2.0"), نیازی به وارد کردن این قسمت نیست
@@ -100,17 +93,17 @@ class LabResult(BaseModel):
 
 # Result:
 
-# result = sampleID='7c70773e-81c3-4f91-b3be-b2924892db0d'
-#    year='1402'
-#    month='12'
-#    day='24'
-#    time='1330'
-#    timestamp=1710410400
-#    klin=1
-#    above40=Decimal('12.5')
-#    carbondioxide=Decimal('3.2')
-#    par05=Decimal('0.5')
-#    par51=Decimal('1.1')
-#    par10=Decimal('1.6')
-#    par16=Decimal('92.4')
-#    par60=Decimal('6.0')
+# result = sampleID='73796d9c-3b75-461f-ae3b-1de2ad3a7076'
+# year='1402'
+# month='12'
+# day='24'
+# time='1330'
+# timestamp=1710410400
+# klin1=Decimal('1.32')
+# klin2=Decimal('3.42')
+# above40=Decimal('12.5')
+# par05=Decimal('0.5')
+# par51=Decimal('1.1')
+# par10=Decimal('1.6')
+# par16=Decimal('92.4')
+# par60=Decimal('6.0')
