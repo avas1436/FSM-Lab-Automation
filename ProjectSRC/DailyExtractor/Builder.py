@@ -1,5 +1,6 @@
 from abc import ABC
 from decimal import Decimal
+from typing import Any, Dict
 
 import pandas as pd  # type: ignore
 from openpyxl import load_workbook  # type: ignore
@@ -31,7 +32,7 @@ class Openpyxl(ExcelAdapter):
             ws = wb[sheet]
             cell_range = ws["A4":"L31"]
 
-            sheet_data = [[cell.value for cell in row] for row in cell_range]
+            sheet_data = [[cell.value for cell in ls] for ls in cell_range]
 
             yield sheet_data
 
@@ -52,13 +53,13 @@ class Pandas(ExcelAdapter):
         sheet_names = xls.sheet_names
         active_sheets = sheet_names[self.start - 1 : self.end]
         for sheet in active_sheets:
-            # خواندن محدوده‌ی سلول‌ها (A4:L31) # skiprows=3 یعنی از ردیف چهارم شروع کند (چون اندیس از 0 است)
+            # خواندن محدوده‌ی سلول‌ها (A4:L31) # skiplss=3 یعنی از ردیف چهارم شروع کند (چون اندیس از 0 است)
             df = pd.read_excel(
                 self.file_path,
                 sheet_name=sheet,
                 header=None,
-                skiprows=3,  # شروع از ردیف 4
-                nrows=28,  # تا ردیف 31 (31-4+1 = 28 ردیف)
+                skiplss=3,  # شروع از ردیف 4
+                nlss=28,  # تا ردیف 31 (31-4+1 = 28 ردیف)
                 usecols="A:L",  # ستون‌های A تا L
             )
 
@@ -85,24 +86,63 @@ class ExcelAdapterFacade:
 class LabResultBuilder:
     def __init__(self, raw_data: list[list]):
         self.raw_data = raw_data
-        self._records = {}
+        self._records: list[dict[str, Any]] = []
 
     def parse(self):
-        pass
+        date = self.raw_data[0][4]  # '1404/07/02'
+        year, month, day = str(date).split("/")
 
-    def build(self) -> LabResult:
-        return LabResult(**self._data)
+        for i, ls in enumerate(self.raw_data):
+
+            if i < 8:
+                continue
+            val = str(ls[0])[:2]  # فقط دو رقم اول ساعت
+            if val.isdigit() and 0 <= int(val) <= 24:
+                time = str(ls[0])[:5].replace(":", "")
+            else:
+                continue
+
+            record = {
+                "year": year,
+                "month": month,
+                "day": day,
+                "time": time,
+                "klin1": str(ls[1]) if ls[1] is not None else "Not Tested",
+                "klin2": str(ls[3]) if ls[3] is not None else "Not Tested",
+                "above40": str(ls[5]) if ls[5] is not None else "Not Tested",
+                "par05": (
+                    str(self.raw_data[i + 1][8])
+                    if 7 < i < 20 and self.raw_data[i + 1][8] is not None
+                    else "Not Tested"
+                ),
+                "par51": (
+                    str(self.raw_data[i + 1][9])
+                    if 7 < i < 20 and self.raw_data[i + 1][9] is not None
+                    else "Not Tested"
+                ),
+                "par60": str(ls[11]) if ls[11] is not None else "Not Tested",
+            }
+
+            fields = ["klin1", "klin2", "above40", "par05"]
+            if all(record[f] == "Not Tested" for f in fields):
+                continue
+
+            print(record)
+
+    # def build(self) -> LabResult:
+    #     return LabResult(**self.record)
 
 
 # openpyxl adaptor test:
 
+excel = Openpyxl(
+    file_path=r"C:\Users\abAsz\Documents\GIT\FSM Lab Automation\ProjectSRC\DailyExtractor\daily.xlsx",
+    start=1,
+    end=4,
+)
 
-# excel = Openpyxl(
-#     file_path=r"C:\Users\abAsz\Documents\GIT\FSM Lab Automation\ProjectSRC\DailyExtractor\daily.xlsx",
-#     start=1,
-#     end=4,
-# )
+data = excel.get_records()
 
-# data = excel.get_records()
-# for i in range(4):
-#     print(next(data))
+for i in range(4):
+    data_parser = LabResultBuilder(next(data))
+    print(data_parser.parse())
