@@ -66,10 +66,18 @@ class LabResult(BaseModel):
         )
 
         # par10 = par05 + par51
-        self.par10 = self.par05 + self.par51  # type: ignore
+        if isinstance(self.par05, Decimal) and isinstance(self.par51, Decimal):
+            self.par10 = self.par05 + self.par51
+        else:
+            self.par10 = "Not Tested"
+        # self.par10 = self.par05 + self.par51  # type: ignore
 
         # par16 = 100 - par10 - par60
-        self.par16 = Decimal("100.0") - self.par10 - self.par60  # type: ignore
+        if isinstance(self.par10, Decimal) and isinstance(self.par60, Decimal):
+            self.par16 = Decimal("100.0") - self.par10 - self.par60
+        else:
+            self.par16 = "Not Tested"
+        # self.par16 = Decimal("100.0") - self.par10 - self.par60  # type: ignore
 
 
 # Example :

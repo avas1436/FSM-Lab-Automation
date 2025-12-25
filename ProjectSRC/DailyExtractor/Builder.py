@@ -127,10 +127,12 @@ class LabResultBuilder:
             if all(record[f] == "Not Tested" for f in fields):
                 continue
 
-            print(record)
+            self._records.append(record)
 
-    # def build(self) -> LabResult:
-    #     return LabResult(**self.record)
+        return self
+
+    def build(self) -> list[LabResult]:
+        return [LabResult(**rec) for rec in self._records]
 
 
 # openpyxl adaptor test:
@@ -145,4 +147,5 @@ data = excel.get_records()
 
 for i in range(4):
     data_parser = LabResultBuilder(next(data))
-    print(data_parser.parse())
+    lab_result = data_parser.parse().build()
+    print(lab_result)
