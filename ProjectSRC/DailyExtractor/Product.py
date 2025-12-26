@@ -7,12 +7,11 @@ from pydantic import BaseModel, Field, field_validator
 
 
 class LabResult(BaseModel):
-    sampleID: str = Field(default_factory=lambda: str(uuid4()))
+    timestamp: int | str = "NA"
     year: str = Field(..., min_length=4, max_length=4)
     month: str = Field(..., min_length=2, max_length=2)
     day: str = Field(..., min_length=2, max_length=2)
     time: str = Field(..., min_length=4, max_length=5)
-    timestamp: int | str = "NA"
     klin1: Decimal | str = "Not Tested"
     klin2: Decimal | str = "Not Tested"
     above40: Decimal | str = "Not Tested"
