@@ -32,6 +32,28 @@ class CsvSaver(Saver):
 
         self.out_file = open(file=self.file_path, mode="w", newline="", encoding="utf-8")
         self.csv_writer = csv.writer(self.out_file, delimiter=",")
+
+        # نوشتن هدر فقط یک بار
+        if not self.header_written:
+            self.csv_writer.writerow(
+                [
+                    "Time Stamp",
+                    "Year",
+                    "Month",
+                    "Day",
+                    "Time",
+                    "Klin 1",
+                    "Klin 2",
+                    "Above 40mm CO2",
+                    "particles 0-5mm",
+                    "particles 5-10mm",
+                    "particles 0-10mm",
+                    "particles 10-60mm",
+                    "particles +60mm",
+                ]
+            )
+            self.header_written = True
+
         return self
 
     def save(self, data):
