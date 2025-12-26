@@ -28,7 +28,7 @@ class CsvSaver(Saver):
         os.makedirs(os.path.dirname(self.file_path), exist_ok=True)
 
         self.out_file = open(file=self.file_path, mode="w", newline="", encoding="utf-8")
-        self.csv_writer = csv.writer(self.out_file, delimiter="|")
+        self.csv_writer = csv.writer(self.out_file, delimiter=",")
         return self
 
     def save(self, data):
