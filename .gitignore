@@ -88,3 +88,6 @@ chrome_profile_*/
 
 # tester file 
 sample-data-for-test-check-data.txt
+
+# Database
+Database/*
