@@ -5,6 +5,7 @@ from abc import ABC, abstractmethod
 from decimal import Decimal
 
 import toml  # type: ignore
+from Builder import ExcelAdapterFacade, LabResultBuilder, Openpyxl, Pandas  # type: ignore
 from genericpath import exists
 from Product import LabResult  # type: ignore
 
@@ -77,26 +78,62 @@ class SqliteSaver(Saver):
 
 # Director - from Builder Pattern
 class LabResultManager:
-    pass
+    def __init__(
+        self,
+        daily_file: str = "daily.xlsx",
+        start_day: int = 1,
+        end_day: int = 31,
+        proccess_engine: str = "openpyxl",
+        excel_data=None,
+        database_engine: str = "csv",
+        output: str = r"DataBase\csvdatabase.csv",
+    ):
+        self.daily_file = daily_file
+        self.start_day = start_day
+        self.end_day = end_day
+        self.proccess_engine = proccess_engine
+        self.engine = ExcelAdapterFacade(
+            file_path=rf"{self.daily_file}",
+            start=self.start_day,
+            end=self.end_day,
+            engine=self.proccess_engine,
+        )
+        self.excel_data = self.engine.get_records()
+        self.database_engine = database_engine
+        self.output = output
+
+    def _excel_data(self):
+        for ـ in range(self.end_day - self.start_day + 1):
+            self.excel_data = next(self.engine)
+            yield self
+
+    def _select_saver(self):
+        if self.database_engine == "csv":
+            return CsvSaver(file_path=self.output)
+
+        if self.database_engine == "toml":
+            return TomlSaver(file_path=self.output)
+
+        if self.database_engine == "sqlite3":
+            return SqliteSaver(file_path=self.output)
+
+        else:
+            raise ValueError("Unsupported database engine")
+
+    def save_results(self):
+        saver = self._select_saver()
+
+        if isinstance(saver, CsvSaver):
+            with saver as s:
+                for record in self.excel_data:
+                    data_parser = LabResultBuilder(raw_data=record)
+                    lab_result = data_parser.parse().build()
+                    for data in lab_result:
+                        saver.save(data=data)
 
 
-data = LabResult(
-    sampleID="5cdd6790-e061-4009-8f27-2e90b3efb0be",
-    year="1404",
-    month="07",
-    day="01",
-    time="0800",
-    timestamp=1758601800,
-    klin1=Decimal("4.72"),
-    klin2=Decimal("3.36"),
-    above40=Decimal("2.35"),
-    par05=Decimal("3.9"),
-    par51=Decimal("3.7"),
-    par10=Decimal("7.6"),
-    par16=Decimal("92.4"),
-    par60=Decimal("0.0"),
-)
-
-
-with CsvSaver() as saver:
-    saver.save(data=data)
+if __name__ == "__main__":
+    m = LabResultManager(
+        daily_file=r"C:\Users\abAsz\Documents\GIT\FSM Lab Automation\ProjectSRC\DailyExtractor\daily.xlsx"
+    )
+    m.save_results()
