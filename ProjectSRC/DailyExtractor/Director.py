@@ -5,6 +5,7 @@ from abc import ABC, abstractmethod
 from decimal import Decimal
 
 import toml  # type: ignore
+import typer
 from Builder import ExcelAdapterFacade, LabResultBuilder, Openpyxl, Pandas  # type: ignore
 from genericpath import exists
 from Product import LabResult  # type: ignore
@@ -132,8 +133,107 @@ class LabResultManager:
                         saver.save(data=data)
 
 
-if __name__ == "__main__":
-    m = LabResultManager(
-        daily_file=r"C:\Users\abAsz\Documents\GIT\FSM Lab Automation\ProjectSRC\DailyExtractor\daily.xlsx"
+app = typer.Typer(add_completion=False)
+
+
+def interactive():
+
+    def _validate_days(start: int, end: int) -> None:
+        if start < 1 or end < start:
+            raise typer.BadParameter(message="Invalid day range. Must satisfy 1 <= start <= end.")
+
+    typer.secho(
+        message="LabResultManager",
+        fg=typer.colors.CYAN,
+        bold=True,
     )
-    m.save_results()
+
+    # Always prompt the user for each parameter (100% interactive behavior).
+    daily_file = typer.prompt(text="Enter path to daily Excel file", default="daily.xlsx")
+    start_day = typer.prompt(text="Enter start day (integer)", default=1, type=int)
+    end_day = typer.prompt(text="Enter end day (integer)", default=31, type=int)
+
+    try:
+        _validate_days(start=start_day, end=end_day)
+    except typer.BadParameter as exc:
+        typer.secho(message=f"Error: {exc}", fg=typer.colors.RED, err=True)
+        raise typer.Exit(code=1)
+
+    engine = typer.prompt(text="Enter Excel processing engine (e.g. openpyxl)", default="openpyxl")
+    db = typer.prompt(text="Enter database engine (csv | toml | sqlite3)", default="csv")
+    output = typer.prompt(text="Enter output path", default=r"DataBase\csvdatabase.csv")
+
+    typer.secho(message="\n=== Selected configuration ===", fg=typer.colors.GREEN, bold=True)
+    typer.echo(message=f"Excel file : {daily_file}")
+    typer.echo(message=f"Days       : {start_day} -> {end_day}")
+    typer.echo(message=f"Engine     : {engine}")
+    typer.echo(message=f"DB engine  : {db}")
+    typer.echo(message=f"Output     : {output}")
+    typer.secho(message="=============================\n", fg=typer.colors.GREEN)
+
+    if not typer.confirm(text="Do you want to continue?"):
+        typer.secho(message="Operation cancelled by user.", fg=typer.colors.YELLOW)
+        raise typer.Exit()
+
+    # Instantiate and run manager (adjust imports/names to your project)
+    try:
+        mgr = LabResultManager(
+            daily_file=daily_file,
+            start_day=start_day,
+            end_day=end_day,
+            proccess_engine=engine,
+            database_engine=db,
+            output=output,
+        )
+
+        typer.secho(message="Processing and saving results...", fg=typer.colors.BLUE)
+
+        # Prefer calling manager's own save_results if available.
+        try:
+            result = mgr.save_results()
+            if isinstance(result, int):
+                typer.secho(message=f"Done. Records saved: {result}", fg=typer.colors.GREEN)
+            else:
+                typer.secho(message="Done. Processing finished.", fg=typer.colors.GREEN)
+        except AttributeError:
+            # Fallback: manual processing using _select_saver and excel_data
+            if not hasattr(mgr, "_select_saver"):
+                typer.secho(
+                    message="Error: LabResultManager does not provide save_results or _select_saver.",
+                    fg=typer.colors.RED,
+                )
+                raise typer.Exit(code=2)
+
+            saver = mgr._select_saver()
+            processed = 0
+            with saver as s:
+                # If mgr._excel_data is a generator, use it; otherwise iterate mgr.excel_data
+                try:
+                    source = mgr._excel_data()
+                except Exception:
+                    source = getattr(mgr, "excel_data", [])
+
+                for record in source:
+                    # If your implementation yields the manager itself, try to extract the record
+                    if isinstance(record, LabResultManager):
+                        record = getattr(record, "excel_data", None)
+
+                    data_parser = LabResultBuilder(raw_data=record)
+                    lab_result = data_parser.parse().build()
+                    for data in lab_result:
+                        s.save(data=data)
+                        processed += 1
+
+            typer.secho(message=f"Done. Records saved: {processed}", fg=typer.colors.GREEN)
+
+    except Exception as e:
+        typer.secho(message=f"Execution error: {e}", fg=typer.colors.RED, err=True)
+        raise typer.Exit(code=1)
+
+
+if __name__ == "__main__":
+    app()
+    # m = LabResultManager(
+    #     daily_file=r"C:\Users\abAsz\Documents\GIT\FSM Lab Automation\ProjectSRC\DailyExtractor\daily.xlsx"
+    # )
+    # m.save_results()
