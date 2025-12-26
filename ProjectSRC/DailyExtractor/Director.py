@@ -22,6 +22,9 @@ class Saver(ABC):
 class CsvSaver(Saver):
     def __init__(self, file_path: str = r"DataBase\csvdatabase.csv"):
         self.file_path = file_path
+        self.out_file = None
+        self.csv_writer = None
+        self.header_written = False
 
     def __enter__(self):
 
