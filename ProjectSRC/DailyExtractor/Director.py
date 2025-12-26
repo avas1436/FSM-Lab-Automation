@@ -16,8 +16,21 @@ class Saver(ABC):
 
 # --- Concrete Strategies ---
 class CsvSaver(Saver):
+    def __init__(self, file_path: str = r"DataBase\csvdatabase.csv"):
+        self.file_path = file_path
+
+    def __enter__(self):
+        self.out_file = open(file=self.file_path, mode="w", newline="", encoding="utf-8")
+        self.csv_writer = csv.writer(self.out_file, delimiter="|")
+        return self
+
     def save(self, data):
-        return super().save(data)
+        self.csv_writer.writerow(data.dict().values())
+        return self
+
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        if self.out_file:
+            self.out_file.close()
 
 
 class TomlSaver(Saver):
