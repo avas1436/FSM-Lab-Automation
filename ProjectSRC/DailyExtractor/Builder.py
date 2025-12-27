@@ -52,21 +52,18 @@ class Pandas(ExcelAdapter):
         xls = pd.ExcelFile(self.file_path)
         sheet_names = xls.sheet_names
         active_sheets = sheet_names[self.start - 1 : self.end]
+
         for sheet in active_sheets:
-            # خواندن محدوده‌ی سلول‌ها (A4:L31) # skiplss=3 یعنی از ردیف چهارم شروع کند (چون اندیس از 0 است)
             df = pd.read_excel(
                 self.file_path,
                 sheet_name=sheet,
                 header=None,
-                skiplss=3,  # شروع از ردیف 4
-                nlss=28,  # تا ردیف 31 (31-4+1 = 28 ردیف)
-                usecols="A:L",  # ستون‌های A تا L
+                skiprows=3,
+                nrows=28,
+                usecols="A:L",
             )
-
-        # تبدیل به لیست لیست‌ها مثل خروجی openpyxl
-        sheet_data = df.values.tolist()
-
-        yield sheet_data
+            sheet_data = df.values.tolist()
+            yield sheet_data
 
 
 # Facade
@@ -107,22 +104,20 @@ class LabResultBuilder:
                 "month": month,
                 "day": day,
                 "time": time,
-                "klin1": safe_decimal(str(ls[1]), sp="0.01") if ls[1] is not None else "Not Tested",
-                "klin2": safe_decimal(str(ls[3]), sp="0.01") if ls[3] is not None else "Not Tested",
-                "above40": (
-                    safe_decimal(str(ls[5]), sp="0.01") if ls[5] is not None else "Not Tested"
-                ),
+                "klin1": str(ls[1]) if ls[1] is not None else "Not Tested",
+                "klin2": str(ls[3]) if ls[3] is not None else "Not Tested",
+                "above40": (str(ls[5]) if ls[5] is not None else "Not Tested"),
                 "par05": (
-                    safe_decimal(str(self.raw_data[i + 1][8]))
+                    str(self.raw_data[i + 1][8])
                     if 7 < i < 20 and self.raw_data[i + 1][8] is not None
                     else "Not Tested"
                 ),
                 "par51": (
-                    safe_decimal(str(self.raw_data[i + 1][9]))
+                    str(self.raw_data[i + 1][9])
                     if 7 < i < 20 and self.raw_data[i + 1][9] is not None
                     else "Not Tested"
                 ),
-                "par60": safe_decimal(str(ls[11])) if ls[11] is not None else "Not Tested",
+                "par60": str(ls[11]) if ls[11] is not None else "Not Tested",
             }
 
             fields = ["klin1", "klin2", "above40", "par05"]
@@ -140,7 +135,7 @@ class LabResultBuilder:
 # openpyxl adaptor test:
 
 # excel = Openpyxl(
-#     file_path=r"C:\Users\abAsz\Documents\GIT\FSM Lab Automation\ProjectSRC\DailyExtractor\daily.xlsx",
+# file_path=r"C:\Users\abAsz\Documents\GIT\FSM Lab Automation\ProjectSRC\DailyExtractor\daily.xlsx",
 #     start=1,
 #     end=4,
 # )
@@ -150,4 +145,22 @@ class LabResultBuilder:
 # for i in range(4):
 #     data_parser = LabResultBuilder(next(data))
 #     lab_result = data_parser.parse().build()
-#     print(lab_result)
+#     for res in lab_result:
+#         print(res.model_dump())
+
+
+# pandas adaptor test:
+
+# excel = Pandas(
+#     file_path=r"F:\گزارش\1404\9. آذر\daily.xlsx",
+#     start=1,
+#     end=2,
+# )
+
+# data = excel.get_records()
+
+# for i in range(2):
+#     data_parser = LabResultBuilder(next(data))
+#     lab_result = data_parser.parse().build()
+#     for res in lab_result:
+#         print(res.model_dump())
