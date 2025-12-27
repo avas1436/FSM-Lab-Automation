@@ -25,13 +25,16 @@ class Openpyxl(ExcelAdapter):
         self.end = end
 
     def get_records(self):
-        with load_workbook(filename=self.file_path, data_only=True, read_only=True) as wb:
+        wb = load_workbook(filename=self.file_path, data_only=True, read_only=True)
+        try:
             sheet_names = wb.sheetnames
             active_sheets = sheet_names[self.start - 1 : self.end]
             for sheet in active_sheets:
                 ws = wb[sheet]
                 cell_range = ws["A4":"L31"]
                 yield [[cell.value for cell in ls] for ls in cell_range]
+        finally:
+            wb.close()
 
 
 # Adapter with pandas
@@ -156,6 +159,22 @@ class LabResultBuilder:
 
 # for i in range(2):
 #     data_parser = LabResultBuilder(next(data))
+#     lab_result = data_parser.parse().build()
+#     for res in lab_result:
+#         print(res.model_dump())
+
+
+# test facade
+# excel = ExcelAdapterFacade(
+#     file_path=r"C:\Users\abAsz\Documents\Foolad-Sang-Automation\4. data extract\استخراج دیتا گزارش روزانه\5\daily.xlsx",
+#     start=1,
+#     end=1,
+#     engine="openpyxl",
+# )
+
+# full_data = list(excel.get_records())
+# for res in full_data:
+#     data_parser = LabResultBuilder(res)
 #     lab_result = data_parser.parse().build()
 #     for res in lab_result:
 #         print(res.model_dump())
