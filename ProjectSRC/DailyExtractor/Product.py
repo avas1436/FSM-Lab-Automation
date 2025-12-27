@@ -1,4 +1,4 @@
-from decimal import Decimal
+from decimal import ROUND_HALF_UP, Decimal, InvalidOperation
 
 # با نوشتن عبارت type: ignore دیگر playcene کاری به ارور های این قسمت ندارد
 import jdatetime  # type: ignore
@@ -11,14 +11,14 @@ class LabResult(BaseModel):
     month: str = Field(..., min_length=2, max_length=2)
     day: str = Field(..., min_length=2, max_length=2)
     time: str = Field(..., min_length=4, max_length=5)
-    klin1: Decimal | str = "Not Tested"
-    klin2: Decimal | str = "Not Tested"
-    above40: Decimal | str = "Not Tested"
-    par05: Decimal | str = "Not Tested"
-    par51: Decimal | str = "Not Tested"
-    par10: Decimal | str = "Not Tested"
-    par16: Decimal | str = "Not Tested"
-    par60: Decimal | str = "Not Tested"
+    klin1: str = "Not Tested"
+    klin2: str = "Not Tested"
+    above40: str = "Not Tested"
+    par05: str = "Not Tested"
+    par51: str = "Not Tested"
+    par10: str = "Not Tested"
+    par16: str = "Not Tested"
+    par60: str = "Not Tested"
 
     @field_validator("year", mode="before")
     def check_year(cls, v):
@@ -46,6 +46,22 @@ class LabResult(BaseModel):
         if not (1 <= day_int <= 31):
             raise ValueError("Day must be between 01 and 31")
         return v
+
+    @field_validator("klin1", "klin2", "above40", mode="before")
+    def safe_decimal_co2(value) -> str:
+        try:
+            round = Decimal(str(value)).quantize(Decimal("0.01"), rounding=ROUND_HALF_UP)
+            return str(round)
+        except (InvalidOperation, ValueError):
+            return "Not Tested"
+
+    @field_validator("par05", "par51", "par60", mode="before")
+    def safe_decimal_par(value) -> str:
+        try:
+            round = Decimal(str(value)).quantize(Decimal("0.1"), rounding=ROUND_HALF_UP)
+            return str(round)
+        except (InvalidOperation, ValueError):
+            return "Not Tested"
 
     def model_post_init(self, __context):
         """بعد از ساخت مدل، فیلدهای محاسباتی را مقداردهی کن"""
@@ -78,14 +94,14 @@ class LabResult(BaseModel):
         )
 
         # par10 = par05 + par51
-        if isinstance(self.par05, Decimal) and isinstance(self.par51, Decimal):
-            self.par10 = self.par05 + self.par51
+        if self.par05 != "Not Tested" and self.par51 != "Not Tested":
+            self.par10 = str(Decimal(self.par05) + Decimal(self.par51))
         else:
             self.par10 = "Not Tested"
 
         # par16 = 100 - par10 - par60
-        if isinstance(self.par10, Decimal) and isinstance(self.par60, Decimal):
-            self.par16 = Decimal("100.0") - self.par10 - self.par60
+        if self.par10 != "Not Tested" and self.par60 != "Not Tested":
+            self.par16 = str(Decimal("100.0") - Decimal(self.par10) - Decimal(self.par60))
         else:
             self.par16 = "Not Tested"
 
@@ -94,7 +110,7 @@ class LabResult(BaseModel):
 
 # result = LabResult(
 #     year="1402",
-#     month="12",
+#     month="01",
 #     day="24",
 #     time="1330",
 #     klin1="1.32",
@@ -106,22 +122,23 @@ class LabResult(BaseModel):
 #     # par16=Decimal("1.6"), نیازی به وارد کردن این قسمت نیست
 #     par60=Decimal("6.0"),
 # )
-# print(result)
+# print(result.model_dump())
 
 
 # Result:
 
-# result = sampleID='73796d9c-3b75-461f-ae3b-1de2ad3a7076'
-# year='1402'
-# month='12'
-# day='24'
-# time='1330'
-# timestamp=1710410400
-# klin1=Decimal('1.32')
-# klin2=Decimal('3.42')
-# above40=Decimal('12.5')
-# par05=Decimal('0.5')
-# par51=Decimal('1.1')
-# par10=Decimal('1.6')
-# par16=Decimal('92.4')
-# par60=Decimal('6.0')
+# result = {
+#     "timestamp": 1710410400,
+#     "year": "1402",
+#     "month": "01",
+#     "day": "24",
+#     "time": "1330",
+#     "klin1": "1.32",
+#     "klin2": "3.42",
+#     "above40": "12.50",
+#     "par05": "0.5",
+#     "par51": "1.1",
+#     "par10": "1.6",
+#     "par16": "92.4",
+#     "par60": "6.0",
+# }

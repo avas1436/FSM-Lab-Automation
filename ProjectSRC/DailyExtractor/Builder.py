@@ -1,7 +1,6 @@
 import datetime
 from abc import ABC
-from decimal import ROUND_HALF_UP, Decimal, InvalidOperation
-from typing import Any, Dict
+from typing import Any
 
 import pandas as pd  # type: ignore
 from openpyxl import load_workbook  # type: ignore
@@ -82,15 +81,6 @@ class ExcelAdapterFacade:
 
     def get_records(self):
         return self.adapter.get_records()
-
-
-def safe_decimal(value, sp: str = "0.1") -> Decimal | str:
-    if value is None:
-        return "Not Tested"
-    try:
-        return Decimal(str(value)).quantize(Decimal(sp), rounding=ROUND_HALF_UP)
-    except (InvalidOperation, ValueError):
-        return "Not Tested"
 
 
 class LabResultBuilder:
