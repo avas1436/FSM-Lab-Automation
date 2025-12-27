@@ -25,18 +25,13 @@ class Openpyxl(ExcelAdapter):
         self.end = end
 
     def get_records(self):
-        wb = load_workbook(filename=rf"{self.file_path}", data_only=True, read_only=True)
-        sheet_names = wb.sheetnames
-        active_sheets = sheet_names[self.start - 1 : self.end]
-        for sheet in active_sheets:
-            ws = wb[sheet]
-            cell_range = ws["A4":"L31"]
-
-            sheet_data = [[cell.value for cell in ls] for ls in cell_range]
-
-            yield sheet_data
-
-        wb.close()
+        with load_workbook(filename=self.file_path, data_only=True, read_only=True) as wb:
+            sheet_names = wb.sheetnames
+            active_sheets = sheet_names[self.start - 1 : self.end]
+            for sheet in active_sheets:
+                ws = wb[sheet]
+                cell_range = ws["A4":"L31"]
+                yield [[cell.value for cell in ls] for ls in cell_range]
 
 
 # Adapter with pandas

@@ -26,9 +26,9 @@ class LabResultManager(BaseModel):
             engine=self.extract_engine,
         )
         records = facade.get_records()
-        for sheet_data in records:
-            self.excel_data = sheet_data
-            yield self
+        for _ in range(self.end_day - self.start_day + 1):
+            self.excel_data = next(records)
+            return self
 
     def _select_saver(self):
         if self.saver_engine == "csv":
@@ -56,5 +56,7 @@ class LabResultManager(BaseModel):
 
 
 if __name__ == "__main__":
-    m = LabResultManager(daily_file=r"F:\گزارش\1404\9. آذر\daily.xlsx")
+    m = LabResultManager(
+        daily_file=r"C:\Users\abAsz\Documents\Foolad-Sang-Automation\4. data extract\استخراج دیتا گزارش روزانه\5\daily.xlsx"
+    )
     m.save_results()
