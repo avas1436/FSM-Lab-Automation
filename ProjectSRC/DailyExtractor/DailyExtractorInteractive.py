@@ -1,4 +1,3 @@
-import questionary  # type: ignore
 from Director import LabResultManager  # type: ignore
 
 
