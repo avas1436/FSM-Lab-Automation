@@ -54,10 +54,10 @@ class LabResultManager(BaseModel):
                         s.save(data)
 
 
-if __name__ == "__main__":
-    m = LabResultManager(
-        daily_file=r"C:\Users\abAsz\Documents\Foolad-Sang-Automation\4. data extract\استخراج دیتا گزارش روزانه\5\daily.xlsx",
-        start_day=1,
-        end_day=31,
-    )
-    m.save_results()
+# if __name__ == "__main__":
+#     m = LabResultManager(
+#         daily_file=r"C:\Users\abAsz\Documents\Foolad-Sang-Automation\4. data extract\استخراج دیتا گزارش روزانه\5\daily.xlsx",
+#         start_day=1,
+#         end_day=31,
+#     )
+#     m.save_results()
