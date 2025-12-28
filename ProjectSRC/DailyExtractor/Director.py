@@ -44,7 +44,7 @@ class LabResultManager(BaseModel):
         return self.excel_data
 
     def _select_saver(self):
-        logger.info(f"Selecting saver engine: {self.saver_engine}")
+        # logger.info(f"Selecting saver engine: {self.saver_engine}")
         if self.saver_engine == "csv":
             return CsvSaver(file_path=self.output)
 
@@ -59,27 +59,27 @@ class LabResultManager(BaseModel):
             raise ValueError("Unsupported database engine")
 
     def save_results(self):
-        logger.info("Initiating save_results workflow")
+        # logger.info("Initiating save_results workflow")
         saver = self._select_saver()
         self._extract_data()
 
         if isinstance(saver, CsvSaver):
             with saver as s:
-                logger.info("Saving results to CSV at %s", self.output)
+                # logger.info("Saving results to CSV at %s", self.output)
                 for day_index, days in enumerate(self.excel_data, start=1):
                     logger.debug(f"Processing day {day_index} with {len(days)} entries")
                     data_parser_object = LabResultBuilder(days)
                     lab_result = data_parser_object.parse().build()
                     for record_index, data in enumerate(lab_result, start=1):
-                        logger.debug(f"Saving record {record_index}: {data}")
+                        # logger.debug(f"Saving record {record_index}: {data}")
                         s.save(data)
 
-                logger.info("All results saved successfully to %s", self.output)
+                logger.info(f"All results saved successfully to {self.output}")
 
 
 if __name__ == "__main__":
     m = LabResultManager(
-        daily_file=r"C:\Users\abAsz\Documents\Foolad-Sang-Automation\4. data extract\استخراج دیتا گزارش روزانه\1\daily.xlsx",
+        daily_file=r"C:\Users\abAsz\Documents\Foolad-Sang-Automation\4. data extract\استخراج دیتا گزارش روزانه\7\daily.xlsx",
         start_day=1,
         end_day=31,
     )
