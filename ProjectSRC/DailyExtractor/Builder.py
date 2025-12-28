@@ -6,6 +6,7 @@ import pandas as pd  # type: ignore
 from openpyxl import load_workbook  # type: ignore
 
 from ProjectSRC.DailyExtractor.Product import LabResult  # type: ignore
+from ProjectSRC.Logger.logger_config import logger
 
 
 # Interface
@@ -40,7 +41,6 @@ class Openpyxl(ExcelAdapter):
 
 # Adapter with pandas
 class Pandas(ExcelAdapter):
-
     def __init__(self, file_path: str, start: int, end: int):
         self.file_path = file_path
         self.start = start
@@ -67,7 +67,9 @@ class Pandas(ExcelAdapter):
 
 # Facade
 class ExcelAdapterFacade:
-    def __init__(self, file_path: str, start: int = 1, end: int = 31, engine: str = "openpyxl"):
+    def __init__(
+        self, file_path: str, start: int = 1, end: int = 31, engine: str = "openpyxl"
+    ):
         if engine == "openpyxl":
             self.adapter = Openpyxl(file_path=file_path, start=start, end=end)
         elif engine == "pandas":
@@ -83,19 +85,31 @@ class LabResultBuilder:
     def __init__(self, raw_data: list[list]):
         self.raw_data = raw_data
         self._records: list[dict[str, Any]] = []
+        # logger.debug(
+        #     f"LabResultBuilder initialized with {len(raw_data)} rows of raw data"
+        # )
 
     def parse(self):
-        date = self.raw_data[0][4]  # '1404/07/02'
-        year, month, day = str(date).split("/")
+        logger.info("Starting parse process...")
+
+        try:
+            date = self.raw_data[0][4]  # '1404/07/02'
+            year, month, day = str(date).split("/")
+            logger.debug(f"Extracted date: year={year}, month={month}, day={day}")
+        except Exception as e:
+            logger.error(f"Failed to extract date from raw_data[0][4]: {e}")
+            raise
 
         for i, ls in enumerate(self.raw_data):
-
             if i < 8:
+                # logger.debug(f"Skipping row {i} (header or irrelevant)")
                 continue
 
             if isinstance(ls[0], (datetime.time, datetime.datetime)):
                 time = ls[0].strftime("%H%M")
+                # logger.debug(f"Row {i}: Parsed time {time}")
             else:
+                logger.warning(f"Row {i} skipped: invalid time format ({type(ls[0])})")
                 continue
 
             record = {
@@ -121,14 +135,20 @@ class LabResultBuilder:
 
             fields = ["klin1", "klin2", "above40", "par05"]
             if all(record[f] == "Not Tested" for f in fields):
+                # logger.info(f"Row {i} skipped: all key fields are 'Not Tested'")
                 continue
 
+            # logger.debug(f"Row {i}: Record added {record}")
             self._records.append(record)
 
+        logger.info(f"Parsing complete. {len(self._records)} records built.")
         return self
 
-    def build(self) -> list[LabResult]:
-        return [LabResult(**rec) for rec in self._records]
+    def build(self) -> list["LabResult"]:
+        # logger.info(f"Building LabResult objects from {len(self._records)} records")
+        results = [LabResult(**rec) for rec in self._records]
+        logger.debug(f"Successfully built {len(results)} LabResult objects")
+        return results
 
 
 # openpyxl adaptor test:
