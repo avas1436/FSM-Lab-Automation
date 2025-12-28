@@ -1,6 +1,7 @@
 import csv
 import os
 from abc import ABC, abstractmethod
+from typing import Self
 
 # Srategy pattern
 
@@ -8,7 +9,7 @@ from abc import ABC, abstractmethod
 # --- Strategy Interface ---
 class Saver(ABC):
     @abstractmethod
-    def save(self, data):
+    def save(self, data) -> Self:
         pass
 
 
@@ -18,17 +19,17 @@ class CsvSaver(Saver):
         self.file_path = file_path
         self.out_file = None
         self.csv_writer = None
-        self.header_written = False
 
     def __enter__(self):
-
         os.makedirs(os.path.dirname(self.file_path), exist_ok=True)
 
-        self.out_file = open(file=self.file_path, mode="w", newline="", encoding="utf-8")
+        # write in csv file in append mode in this mode previous data will be preserved
+        file_exists = os.path.exists(self.file_path)
+        self.out_file = open(self.file_path, mode="a", newline="", encoding="utf-8")
         self.csv_writer = csv.writer(self.out_file, delimiter=",")
 
-        # نوشتن هدر فقط یک بار
-        if not self.header_written:
+        # if file is empty or not exists write header
+        if not file_exists or os.path.getsize(self.file_path) == 0:
             self.csv_writer.writerow(
                 [
                     "Time Stamp",
@@ -46,11 +47,11 @@ class CsvSaver(Saver):
                     "particles +60mm",
                 ]
             )
-            self.header_written = True
 
         return self
 
-    def save(self, data):
+    def save(self, data) -> Self:
+        assert self.csv_writer is not None
         self.csv_writer.writerow(data.model_dump().values())
         return self
 
