@@ -2,8 +2,9 @@ from decimal import ROUND_HALF_UP, Decimal, InvalidOperation
 
 # با نوشتن عبارت type: ignore دیگر playcene کاری به ارور های این قسمت ندارد
 import jdatetime  # type: ignore
-from logger_config import logger  # type: ignore
 from pydantic import BaseModel, Field, field_validator
+
+from ProjectSRC.Logger.logger_config import logger  # type: ignore
 
 
 class LabResult(BaseModel):

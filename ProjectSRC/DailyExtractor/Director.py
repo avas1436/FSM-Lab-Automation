@@ -1,8 +1,9 @@
 # import sqlite3
 # import toml  # type: ignore
-from Builder import ExcelAdapterFacade, LabResultBuilder  # type: ignore
 from pydantic import BaseModel
-from Saver import CsvSaver, SqliteSaver, TomlSaver  # type: ignore
+
+from ProjectSRC.DailyExtractor.Builder import ExcelAdapterFacade, LabResultBuilder  # type: ignore
+from ProjectSRC.DailyExtractor.Saver import CsvSaver, SqliteSaver, TomlSaver  # type: ignore
 
 
 # Director - from Builder Pattern
@@ -54,10 +55,10 @@ class LabResultManager(BaseModel):
                         s.save(data)
 
 
-# if __name__ == "__main__":
-#     m = LabResultManager(
-#         daily_file=r"C:\Users\abAsz\Documents\Foolad-Sang-Automation\4. data extract\استخراج دیتا گزارش روزانه\5\daily.xlsx",
-#         start_day=1,
-#         end_day=31,
-#     )
-#     m.save_results()
+if __name__ == "__main__":
+    m = LabResultManager(
+        daily_file=r"F:\گزارش\1404\3. خرداد\daily.xlsx",
+        start_day=1,
+        end_day=31,
+    )
+    m.save_results()

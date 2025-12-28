@@ -4,7 +4,8 @@ from typing import Any
 
 import pandas as pd  # type: ignore
 from openpyxl import load_workbook  # type: ignore
-from Product import LabResult  # type: ignore
+
+from ProjectSRC.DailyExtractor.Product import LabResult  # type: ignore
 
 
 # Interface
@@ -166,7 +167,7 @@ class LabResultBuilder:
 
 # test facade
 # excel = ExcelAdapterFacade(
-#     file_path=r"C:\Users\abAsz\Documents\Foolad-Sang-Automation\4. data extract\استخراج دیتا گزارش روزانه\5\daily.xlsx",
+#     file_path=r"daily.xlsx",
 #     start=1,
 #     end=1,
 #     engine="openpyxl",
