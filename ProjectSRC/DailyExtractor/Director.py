@@ -11,7 +11,7 @@ from ProjectSRC.DailyExtractor.Saver import (  # type: ignore
     SqliteSaver,
     TomlSaver,
 )
-from ProjectSRC.Logger import logger
+from ProjectSRC.Logger.logger_config import logger
 
 
 # Director - from Builder Pattern
@@ -79,10 +79,10 @@ class LabResultManager(BaseModel):
                 logger.info("All results saved successfully to %s", self.output)
 
 
-if __name__ == "__main__":
-    m = LabResultManager(
-        daily_file=r"F:\گزارش\1404\3. خرداد\daily.xlsx",
-        start_day=1,
-        end_day=31,
-    )
-    m.save_results()
+# if __name__ == "__main__":
+#     m = LabResultManager(
+#         daily_file=r"F:\گزارش\1404\3. خرداد\daily.xlsx",
+#         start_day=1,
+#         end_day=31,
+#     )
+#     m.save_results()
