@@ -90,7 +90,7 @@ class LabResultBuilder:
         # )
 
     def parse(self):
-        logger.info("Starting parse process...")
+        # logger.info("Starting parse process...")
 
         try:
             date = self.raw_data[0][4]  # '1404/07/02'
@@ -109,7 +109,7 @@ class LabResultBuilder:
                 time = ls[0].strftime("%H%M")
                 # logger.debug(f"Row {i}: Parsed time {time}")
             else:
-                logger.warning(f"Row {i} skipped: invalid time format ({type(ls[0])})")
+                # logger.warning(f"Row {i} skipped: invalid time format ({type(ls[0])})")
                 continue
 
             record = {
@@ -141,13 +141,13 @@ class LabResultBuilder:
             # logger.debug(f"Row {i}: Record added {record}")
             self._records.append(record)
 
-        logger.info(f"Parsing complete. {len(self._records)} records built.")
+        # logger.info(f"Parsing complete. {len(self._records)} records built.")
         return self
 
     def build(self) -> list["LabResult"]:
         # logger.info(f"Building LabResult objects from {len(self._records)} records")
         results = [LabResult(**rec) for rec in self._records]
-        logger.debug(f"Successfully built {len(results)} LabResult objects")
+        # logger.debug(f"Successfully built {len(results)} LabResult objects")
         return results
 
 
