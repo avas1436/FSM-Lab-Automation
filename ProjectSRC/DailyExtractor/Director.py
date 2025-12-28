@@ -40,11 +40,11 @@ class LabResultManager(BaseModel):
             engine=self.extract_engine,
         )
         self.excel_data = list(facade.get_records())
-        logger.debug("Extracted %d records successfully", len(self.excel_data))
+        logger.debug(f"Extracted {len(self.excel_data)} records successfully")
         return self.excel_data
 
     def _select_saver(self):
-        logger.info("Selecting saver engine: %s", self.saver_engine)
+        logger.info(f"Selecting saver engine: {self.saver_engine}")
         if self.saver_engine == "csv":
             return CsvSaver(file_path=self.output)
 
@@ -55,7 +55,7 @@ class LabResultManager(BaseModel):
             return SqliteSaver(file_path=self.output)
 
         else:
-            logger.critical("Unsupported saver engine: %s", self.saver_engine)
+            logger.critical(f"Unsupported saver engine: {self.saver_engine}")
             raise ValueError("Unsupported database engine")
 
     def save_results(self):
@@ -67,22 +67,20 @@ class LabResultManager(BaseModel):
             with saver as s:
                 logger.info("Saving results to CSV at %s", self.output)
                 for day_index, days in enumerate(self.excel_data, start=1):
-                    logger.debug(
-                        "Processing day %d with %d entries", day_index + 1, len(days)
-                    )
+                    logger.debug(f"Processing day {day_index} with {len(days)} entries")
                     data_parser_object = LabResultBuilder(days)
                     lab_result = data_parser_object.parse().build()
                     for record_index, data in enumerate(lab_result, start=1):
-                        logger.debug("Saving record #%d: %s", record_index + 1, data)
+                        logger.debug(f"Saving record {record_index}: {data}")
                         s.save(data)
 
                 logger.info("All results saved successfully to %s", self.output)
 
 
-# if __name__ == "__main__":
-#     m = LabResultManager(
-#         daily_file=r"F:\گزارش\1404\3. خرداد\daily.xlsx",
-#         start_day=1,
-#         end_day=31,
-#     )
-#     m.save_results()
+if __name__ == "__main__":
+    m = LabResultManager(
+        daily_file=r"C:\Users\abAsz\Documents\Foolad-Sang-Automation\4. data extract\استخراج دیتا گزارش روزانه\1\daily.xlsx",
+        start_day=1,
+        end_day=31,
+    )
+    m.save_results()
