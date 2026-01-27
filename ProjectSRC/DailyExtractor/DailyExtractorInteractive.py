@@ -1,8 +1,17 @@
 from Director import LabResultManager  # type: ignore
+from pydantic import BaseModel
 
 
-class InteractiveLabResultManager:
+class InteractiveLabResultManager(BaseModel):
     """Interactive CLI for extract and save LabResult"""
+
+    daily_file: str
+    start_day: int = 1
+    end_day: int = 31
+    extract_engine: str
+    excel_data: list[list] = []
+    saver_engine: str
+    output: str
 
     def _show_welcome(self):
         pass
