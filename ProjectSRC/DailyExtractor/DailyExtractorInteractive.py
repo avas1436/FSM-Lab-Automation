@@ -5,6 +5,15 @@ from InquirerPy import inquirer
 class InteractiveLabResultManager:
     """Interactive CLI for extract and save LabResult"""
 
+    def __init__(self) -> None:
+        self.daily_file: str = "daily.xlsx"
+        self.start_day: int = 1
+        self.end_day: int = 31
+        self.extract_engine: str = "openpyxl"
+        self.excel_data: list[list] = []
+        self.saver_engine: str = "csv"
+        self.output: str = r"DataBase\csvdatabase.csv"
+
     def _show_welcome(self):
         BLUE = "\033[94m"
         CYAN = "\033[96m"
@@ -78,17 +87,14 @@ class InteractiveLabResultManager:
     def _get_date_range(self):
         self.start_day = inquirer.number(
             message="Enter start day:",
-            min_allowed=1,
-            max_allowed=31,
             default=1,
         ).execute()
-
+        self.start_day = int(self.start_day)
         self.end_day = inquirer.number(
             message="Enter end day:",
-            min_allowed=self.start_day,
-            max_allowed=31,
             default=31,
         ).execute()
+        self.end_day = int(self.end_day)
 
     def _get_extract_engine(self):
         # Step 3: Select extraction engine
@@ -150,12 +156,7 @@ class InteractiveLabResultManager:
 
 
 if __name__ == "__main__":
-    manager = InteractiveLabResultManager(
-        daily_file="dummy",
-        extract_engine="default",
-        saver_engine="excel",
-        output="out.xlsx",
-    )
+    manager = InteractiveLabResultManager()
 
     manager._show_welcome()
     manager._get_date_range()
