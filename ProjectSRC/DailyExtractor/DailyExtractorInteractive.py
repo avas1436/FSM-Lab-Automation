@@ -1,17 +1,9 @@
 # from Director import LabResultManager  # type: ignore
-from pydantic import BaseModel
+from InquirerPy import inquirer
 
 
-class InteractiveLabResultManager(BaseModel):
+class InteractiveLabResultManager:
     """Interactive CLI for extract and save LabResult"""
-
-    daily_file: str
-    start_day: int = 1
-    end_day: int = 31
-    extract_engine: str
-    excel_data: list[list] = []
-    saver_engine: str
-    output: str
 
     def _show_welcome(self):
         BLUE = "\033[94m"
@@ -84,14 +76,19 @@ class InteractiveLabResultManager(BaseModel):
         pass
 
     def _get_date_range(self):
-        # Step 2: Select day range
+        self.start_day = inquirer.number(
+            message="Enter start day:",
+            min_allowed=1,
+            max_allowed=31,
+            default=1,
+        ).execute()
 
-        # "Enter start day"
-        # "Enter end day"
-
-        # End day must be >= start day!
-        # Re-enter end day
-        pass
+        self.end_day = inquirer.number(
+            message="Enter end day:",
+            min_allowed=self.start_day,
+            max_allowed=31,
+            default=31,
+        ).execute()
 
     def _get_extract_engine(self):
         # Step 3: Select extraction engine
@@ -161,3 +158,4 @@ if __name__ == "__main__":
     )
 
     manager._show_welcome()
+    manager._get_date_range()
