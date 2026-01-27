@@ -1,4 +1,4 @@
-from Director import LabResultManager  # type: ignore
+# from Director import LabResultManager  # type: ignore
 from pydantic import BaseModel
 
 
@@ -14,9 +14,70 @@ class InteractiveLabResultManager(BaseModel):
     output: str
 
     def _show_welcome(self):
-        pass
-        # "Lab Result Manager"
-        # "Manage and save lab results",
+        BLUE = "\033[94m"
+        CYAN = "\033[96m"
+        GREEN = "\033[92m"
+        YELLOW = "\033[93m"
+        MAGENTA = "\033[95m"
+        BOLD = "\033[1m"
+        RESET = "\033[0m"
+
+        print()
+        print(BOLD + CYAN + "=" * 70 + RESET)
+        print(BOLD + MAGENTA + "              Lab Result Manager              " + RESET)
+        print(BOLD + CYAN + "=" * 70 + RESET)
+        print()
+
+        print(
+            GREEN
+            + "An interactive CLI tool for extracting data from daily IS lab reports"
+            + RESET
+        )
+        print(
+            GREEN
+            + "and saving structured lab results into Excel or other output formats."
+            + RESET
+        )
+        print()
+
+        print(BOLD + YELLOW + "Parameters Overview:" + RESET)
+        print(
+            BLUE
+            + "• daily_file"
+            + RESET
+            + "     : Path or pattern for daily lab report files"
+        )
+        print(
+            BLUE
+            + "• start_day"
+            + RESET
+            + "      : First day of the month to start extraction"
+        )
+        print(
+            BLUE
+            + "• end_day"
+            + RESET
+            + "        : Last day of the month to stop extraction"
+        )
+        print(
+            BLUE
+            + "• extract_engine"
+            + RESET
+            + " : Engine responsible for parsing and extracting data"
+        )
+        print(
+            BLUE
+            + "• saver_engine"
+            + RESET
+            + "   : Engine used to persist data to the output"
+        )
+        print(
+            BLUE + "• output" + RESET + "        : Destination path for saved results"
+        )
+        print()
+
+        print(BOLD + CYAN + "=" * 70 + RESET)
+        print()
 
     def _get_daily_file(self):
         # Step 1: Select Excel file
@@ -92,4 +153,11 @@ class InteractiveLabResultManager(BaseModel):
 
 
 if __name__ == "__main__":
-    pass
+    manager = InteractiveLabResultManager(
+        daily_file="dummy",
+        extract_engine="default",
+        saver_engine="excel",
+        output="out.xlsx",
+    )
+
+    manager._show_welcome()
