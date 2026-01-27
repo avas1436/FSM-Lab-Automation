@@ -5,14 +5,13 @@ from InquirerPy import inquirer
 class InteractiveLabResultManager:
     """Interactive CLI for extract and save LabResult"""
 
-    def __init__(self) -> None:
-        self.daily_file: str = "daily.xlsx"
-        self.start_day: int = 1
-        self.end_day: int = 31
-        self.extract_engine: str = "openpyxl"
-        self.excel_data: list[list] = []
-        self.saver_engine: str = "csv"
-        self.output: str = r"DataBase\csvdatabase.csv"
+    daily_file: str
+    start_day: int = 1
+    end_day: int = 31
+    extract_engine: str
+    excel_data: list[list] = []
+    saver_engine: str
+    output: str
 
     def _show_welcome(self):
         BLUE = "\033[94m"
