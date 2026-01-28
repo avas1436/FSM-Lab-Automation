@@ -95,7 +95,7 @@ class InteractiveLabResultManager(BaseModel):
             max_allowed=31,
             default=self.start_day,
         ).execute()
-
+        self.start_day = int(self.start_day)
         self.end_day = inquirer.number(
             message="Enter the end day of the month:",
             min_allowed=self.start_day,
@@ -152,7 +152,7 @@ class InteractiveLabResultManager(BaseModel):
                 output=self.output,
             )
 
-            manager.run()  # یا process() یا execute()
+            manager.save_results()
 
             print("\nProcessing completed successfully!")
 
