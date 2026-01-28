@@ -80,7 +80,7 @@ class InteractiveLabResultManager:
         print()
 
     def _get_daily_file(self):
-        self.start_day = inquirer.text(
+        self.daily_file = inquirer.text(
             message="Enter daily excel path:",
             default="daily.xlsx",
         ).execute()
@@ -99,14 +99,14 @@ class InteractiveLabResultManager:
 
     def _get_extract_engine(self):
         # Step 3: Select extraction engine
-        self.start_day = inquirer.fuzzy(
+        self.extract_engine = inquirer.fuzzy(
             message="Choose extraction engine: ",
             choices=["openpyxl", "pandas"],
         ).execute()
 
     def _get_saver_engine(self):
         # Step 4: Select saving format
-        self.start_day = inquirer.fuzzy(
+        self.saver_engine = inquirer.fuzzy(
             message="Choose saving format: ",
             choices=["csv", "toml", "sqlite3"],
         ).execute()
@@ -119,8 +119,8 @@ class InteractiveLabResultManager:
         if not confirm:
             self.output = inquirer.text(
                 message="Enter output path:",
-                default="daily.xlsx",
             ).execute()
+            return
         default_paths = {
             "csv": r"DataBase\csvdatabase.csv",
             "toml": r"DataBase\tomldatabase.toml",
