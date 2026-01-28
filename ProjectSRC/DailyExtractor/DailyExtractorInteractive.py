@@ -113,13 +113,20 @@ class InteractiveLabResultManager:
 
     def _get_output_path(self):
         # Step 5: Select output path
-
-        # default_paths = {
-        #     "csv": r"DataBase\csvdatabase.csv",
-        #     "toml": r"DataBase\tomldatabase.toml",
-        #     "sqlite3": r"DataBase\sqlitedatabase.db",
-        # }
-        pass
+        confirm = inquirer.confirm(
+            message="if you don`t want to choose path automaticly choose no"
+        ).execute()
+        if not confirm:
+            self.output = inquirer.text(
+                message="Enter output path:",
+                default="daily.xlsx",
+            ).execute()
+        default_paths = {
+            "csv": r"DataBase\csvdatabase.csv",
+            "toml": r"DataBase\tomldatabase.toml",
+            "sqlite3": r"DataBase\sqlitedatabase.db",
+        }
+        self.output = default_paths[self.saver_engine]
 
     def _confirm_configuration(self):
         # Do you want to start processing?
