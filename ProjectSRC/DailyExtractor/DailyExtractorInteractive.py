@@ -130,7 +130,7 @@ class InteractiveLabResultManager:
 
     def _confirm_configuration(self):
         # Do you want to start processing?
-        pass
+        inquirer.confirm(message="Do you want to start processing?").execute()
 
     def _run_processing(self):
         pass
