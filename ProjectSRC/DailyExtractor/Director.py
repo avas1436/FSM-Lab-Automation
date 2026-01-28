@@ -11,12 +11,13 @@ from ProjectSRC.DailyExtractor.Saver import (  # type: ignore
     SqliteSaver,
     TomlSaver,
 )
+from ProjectSRC.Logger.logger_config import logger
 
 
 # Director - from Builder Pattern
 class LabResultManager(BaseModel):
-    """این کلاس تنها اطلاعات را میگیرد و خودش تمامی دیتای مورد نیاز را
-    ذخیره میکند و هیچ نیازی به دانستن جزییات کارش نیس"""
+    """This class receives input parameters, manages data extraction,
+    and saves results without requiring external knowledge of its internals."""
 
     daily_file: str = "daily.xlsx"
     start_day: int = 1
@@ -27,6 +28,11 @@ class LabResultManager(BaseModel):
     output: str = r"DataBase\csvdatabase.csv"
 
     def _extract_data(self):
+        logger.info(
+            "Starting data extraction from %s using engine=%s",
+            self.daily_file,
+            self.extract_engine,
+        )
         facade = ExcelAdapterFacade(
             file_path=self.daily_file,
             start=self.start_day,
@@ -34,9 +40,11 @@ class LabResultManager(BaseModel):
             engine=self.extract_engine,
         )
         self.excel_data = list(facade.get_records())
+        logger.debug(f"Extracted {len(self.excel_data)} records successfully")
         return self.excel_data
 
     def _select_saver(self):
+        # logger.info(f"Selecting saver engine: {self.saver_engine}")
         if self.saver_engine == "csv":
             return CsvSaver(file_path=self.output)
 
@@ -47,19 +55,26 @@ class LabResultManager(BaseModel):
             return SqliteSaver(file_path=self.output)
 
         else:
+            logger.critical(f"Unsupported saver engine: {self.saver_engine}")
             raise ValueError("Unsupported database engine")
 
     def save_results(self):
+        # logger.info("Initiating save_results workflow")
         saver = self._select_saver()
         self._extract_data()
 
         if isinstance(saver, CsvSaver):
             with saver as s:
-                for days in self.excel_data:
+                # logger.info("Saving results to CSV at %s", self.output)
+                for day_index, days in enumerate(self.excel_data, start=1):
+                    logger.debug(f"Processing day {day_index} with {len(days)} entries")
                     data_parser_object = LabResultBuilder(days)
                     lab_result = data_parser_object.parse().build()
-                    for data in lab_result:
+                    for record_index, data in enumerate(lab_result, start=1):
+                        # logger.debug(f"Saving record {record_index}: {data}")
                         s.save(data)
+
+                logger.info(f"All results saved successfully to {self.output}")
 
 
 # if __name__ == "__main__":
