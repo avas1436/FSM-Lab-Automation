@@ -1,8 +1,9 @@
 # from Director import LabResultManager  # type: ignore
 from InquirerPy import inquirer
+from pydantic import BaseModel
 
 
-class InteractiveLabResultManager:
+class InteractiveLabResultManager(BaseModel):
     """Interactive CLI for extract and save LabResult"""
 
     daily_file: str
@@ -81,56 +82,60 @@ class InteractiveLabResultManager:
 
     def _get_daily_file(self):
         self.daily_file = inquirer.text(
-            message="Enter daily excel path:",
+            message="Enter the path to the daily lab Excel file: ",
             default="daily.xlsx",
         ).execute()
 
     def _get_date_range(self):
         self.start_day = inquirer.number(
-            message="Enter start day:",
-            default=1,
+            message="Enter the start day of the month:",
+            min_allowed=1,
+            max_allowed=31,
+            default=self.start_day,
         ).execute()
-        self.start_day = int(self.start_day)
+
         self.end_day = inquirer.number(
-            message="Enter end day:",
-            default=31,
+            message="Enter the end day of the month:",
+            min_allowed=self.start_day,
+            max_allowed=31,
+            default=self.end_day,
         ).execute()
-        self.end_day = int(self.end_day)
 
     def _get_extract_engine(self):
         # Step 3: Select extraction engine
         self.extract_engine = inquirer.fuzzy(
-            message="Choose extraction engine: ",
+            message="Select the extraction engine to use: ",
             choices=["openpyxl", "pandas"],
         ).execute()
 
     def _get_saver_engine(self):
         # Step 4: Select saving format
         self.saver_engine = inquirer.fuzzy(
-            message="Choose saving format: ",
+            message="Select the output storage format: ",
             choices=["csv", "toml", "sqlite3"],
         ).execute()
 
     def _get_output_path(self):
-        # Step 5: Select output path
-        confirm = inquirer.confirm(
-            message="if you don`t want to choose path automaticly choose no"
+        use_default = inquirer.confirm(
+            message="Would you like to use the default output path?"
         ).execute()
-        if not confirm:
-            self.output = inquirer.text(
-                message="Enter output path:",
-            ).execute()
-            return
-        default_paths = {
-            "csv": r"DataBase\csvdatabase.csv",
-            "toml": r"DataBase\tomldatabase.toml",
-            "sqlite3": r"DataBase\sqlitedatabase.db",
-        }
-        self.output = default_paths[self.saver_engine]
 
-    def _confirm_configuration(self):
-        # Do you want to start processing?
-        inquirer.confirm(message="Do you want to start processing?").execute()
+        if use_default:
+            default_paths = {
+                "csv": r"DataBase\csvdatabase.csv",
+                "toml": r"DataBase\tomldatabase.toml",
+                "sqlite3": r"DataBase\sqlitedatabase.db",
+            }
+            self.output = default_paths[self.saver_engine]
+        else:
+            self.output = inquirer.text(
+                message="Please enter the output file path:",
+            ).execute()
+
+    def _confirm_configuration(self) -> bool:
+        return inquirer.confirm(
+            message="Do you want to start processing with the selected configuration?"
+        ).execute()
 
     def _run_processing(self):
         pass
