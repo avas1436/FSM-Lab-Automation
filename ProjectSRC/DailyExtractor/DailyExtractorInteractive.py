@@ -99,7 +99,10 @@ class InteractiveLabResultManager:
 
     def _get_extract_engine(self):
         # Step 3: Select extraction engine
-        pass
+        self.start_day = inquirer.fuzzy(
+            message="Choose extraction engine: ",
+            choices=["openpyxl", "pandas"],
+        ).execute()
 
     def _get_saver_engine(self):
         # Step 4: Select saving format
