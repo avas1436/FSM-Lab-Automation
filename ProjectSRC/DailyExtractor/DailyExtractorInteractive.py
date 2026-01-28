@@ -80,8 +80,10 @@ class InteractiveLabResultManager:
         print()
 
     def _get_daily_file(self):
-        # Step 1: Select Excel file
-        pass
+        self.start_day = inquirer.text(
+            message="Enter daily excel path:",
+            default="daily.xlsx",
+        ).execute()
 
     def _get_date_range(self):
         self.start_day = inquirer.number(
