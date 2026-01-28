@@ -103,7 +103,10 @@ class InteractiveLabResultManager:
 
     def _get_saver_engine(self):
         # Step 4: Select saving format
-        pass
+        self.start_day = inquirer.fuzzy(
+            message="Choose saving format: ",
+            choices=["csv", "toml", "sqlite3"],
+        ).execute()
 
     def _get_output_path(self):
         # Step 5: Select output path
@@ -161,3 +164,5 @@ if __name__ == "__main__":
 
     manager._show_welcome()
     manager._get_date_range()
+    manager._get_saver_engine()
+    manager._get_daily_file()
