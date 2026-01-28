@@ -2,6 +2,8 @@
 from InquirerPy import inquirer
 from pydantic import BaseModel
 
+from ProjectSRC.DailyExtractor.Director import LabResultManager
+
 
 class InteractiveLabResultManager(BaseModel):
     """Interactive CLI for extract and save LabResult"""
@@ -138,46 +140,61 @@ class InteractiveLabResultManager(BaseModel):
         ).execute()
 
     def _run_processing(self):
-        pass
-        # Starting processing...
+        print("\nStarting processing...\n")
 
-        # manager = LabResultManager(
-        #     daily_file=self.config["daily_file"],
-        #     start_day=self.config["start_day"],
-        #     end_day=self.config["end_day"],
-        #     extract_engine=self.config["extract_engine"],
-        #     saver_engine=self.config["saver_engine"],
-        #     output=self.config["output"],
-        # )
+        try:
+            manager = LabResultManager(
+                daily_file=self.daily_file,
+                start_day=self.start_day,
+                end_day=self.end_day,
+                extract_engine=self.extract_engine,
+                saver_engine=self.saver_engine,
+                output=self.output,
+            )
 
-        # Processing completed successfully!
+            manager.run()  # یا process() یا execute()
 
-        # except Exception as e:
-        #     Error during processing:
+            print("\nProcessing completed successfully!")
+
+        except Exception as e:
+            print(f"\nError occurred during processing: {e}")
 
     def run(self):
-        #     try:
-        #         while True:
-        #             self._show_welcome()
-        #             self._get_daily_file()
-        #             self._get_date_range()
-        #             self._get_extract_engine()
-        #             self._get_saver_engine()
-        #             self._get_output_path()
-        # except KeyboardInterrupt:
-        # Program interrupted by user.
-        # except Exception as e:
-        # Unexpected error:
+        try:
+            while True:
+                self._show_welcome()
+                self._get_daily_file()
+                self._get_date_range()
+                self._get_extract_engine()
+                self._get_saver_engine()
+                self._get_output_path()
 
-        # Thank you for using Lab Result Manager!
+                if not self._confirm_configuration():
+                    print("Operation cancelled by user.")
+                else:
+                    self._run_processing()
 
-        pass
+                restart = inquirer.confirm(
+                    message="Would you like to run another extraction?"
+                ).execute()
+
+                if not restart:
+                    break
+
+        except KeyboardInterrupt:
+            print("\nProgram interrupted by user.")
+
+        except Exception as e:
+            print(f"Unexpected error occurred: {e}")
+
+        print("\nThank you for using Lab Result Manager!")
 
 
 if __name__ == "__main__":
-    manager = InteractiveLabResultManager()
-
-    manager._show_welcome()
-    manager._get_date_range()
-    manager._get_saver_engine()
-    manager._get_daily_file()
+    cli = InteractiveLabResultManager(
+        daily_file="daily.xlsx",
+        extract_engine="openpyxl",
+        saver_engine="csv",
+        output="out.csv",
+    )
+    cli.run()
