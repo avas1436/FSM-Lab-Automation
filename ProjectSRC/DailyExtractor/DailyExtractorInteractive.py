@@ -1,6 +1,6 @@
 # from Director import LabResultManager  # type: ignore
 from InquirerPy import inquirer
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 
 from ProjectSRC.DailyExtractor.Director import LabResultManager
 
@@ -12,7 +12,7 @@ class InteractiveLabResultManager(BaseModel):
     start_day: int = 1
     end_day: int = 31
     extract_engine: str
-    excel_data: list[list] = []
+    excel_data: list[list] = Field(default_factory=list)
     saver_engine: str
     output: str
 
