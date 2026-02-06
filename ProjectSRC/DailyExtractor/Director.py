@@ -1,6 +1,6 @@
 # import sqlite3
 # import toml  # type: ignore
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 
 from ProjectSRC.DailyExtractor.Builder import (  # type: ignore
     ExcelAdapterFacade,
@@ -23,7 +23,7 @@ class LabResultManager(BaseModel):
     start_day: int = 1
     end_day: int = 31
     extract_engine: str = "openpyxl"
-    excel_data: list[list] = []
+    excel_data: list[list] = Field(default_factory=list)
     saver_engine: str = "csv"
     output: str = r"DataBase\csvdatabase.csv"
 
