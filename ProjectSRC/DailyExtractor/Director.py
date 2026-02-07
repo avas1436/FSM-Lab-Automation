@@ -63,7 +63,7 @@ class LabResultManager(BaseModel):
         saver = self._select_saver()
         self._extract_data()
 
-        if isinstance(saver, CsvSaver):
+        if isinstance(saver, (CsvSaver, TomlSaver)):
             with saver as s:
                 # logger.info("Saving results to CSV at %s", self.output)
                 for day_index, days in enumerate(self.excel_data, start=1):

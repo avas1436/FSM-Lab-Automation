@@ -1,5 +1,6 @@
 import csv
 import os
+import toml  # type: ignore
 from abc import ABC, abstractmethod
 from typing import Self
 
@@ -62,8 +63,30 @@ class CsvSaver(Saver):
 
 # --- Concrete Strategies ---
 class TomlSaver(Saver):
-    def save(self, data):
-        return super().save(data)
+    def __init__(self, file_path: str = r"DataBase\tomldatabase.toml"):
+        self.file_path = file_path
+        self._data: dict[str, list[dict]] = {"records": []}
+
+    def __enter__(self):
+        os.makedirs(os.path.dirname(self.file_path), exist_ok=True)
+
+        if os.path.exists(self.file_path) and os.path.getsize(self.file_path) > 0:
+            self._data = toml.load(self.file_path)
+            if "records" not in self._data or not isinstance(
+                self._data["records"], list
+            ):
+                self._data["records"] = []
+
+        return self
+
+    def save(self, data) -> Self:
+        self._data["records"].append(data.model_dump())
+        with open(self.file_path, mode="w", encoding="utf-8") as out_file:
+            toml.dump(self._data, out_file)
+        return self
+
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        return None
 
 
 # --- Concrete Strategies ---
